@@ -1,0 +1,17 @@
+D:\Code\APITestApp\bin\Debug\net8.0-windows\APITestApp.exe
+D:\Code\APITestApp\bin\Debug\net8.0-windows\APITestApp.deps.json
+D:\Code\APITestApp\bin\Debug\net8.0-windows\APITestApp.runtimeconfig.json
+D:\Code\APITestApp\bin\Debug\net8.0-windows\APITestApp.dll
+D:\Code\APITestApp\bin\Debug\net8.0-windows\APITestApp.pdb
+D:\Code\APITestApp\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.csproj.AssemblyReference.cache
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.GeneratedMSBuildEditorConfig.editorconfig
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.AssemblyInfoInputs.cache
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.AssemblyInfo.cs
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.csproj.CoreCompileInputs.cache
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.csproj.Up2Date
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.dll
+D:\Code\APITestApp\obj\Debug\net8.0-windows\refint\APITestApp.dll
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.pdb
+D:\Code\APITestApp\obj\Debug\net8.0-windows\APITestApp.genruntimeconfig.cache
+D:\Code\APITestApp\obj\Debug\net8.0-windows\ref\APITestApp.dll
