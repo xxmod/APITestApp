@@ -1,194 +1,98 @@
-# API 测试工具 - 现代版 v2.0
+# API 测试工具 (WinForms / .NET 8)
 
-这是一个基于 .NET 8.0 和 WinForms 的现代化 API 测试工具，经过重大升级，具有更直观的界面和更强大的功能。
+轻量、直观的本地 GUI API 调试工具：分栏布局、路径分段、键值对式参数/请求头/Cookie 管理、响应 & Cookie 变化分离显示。
 
-## 🎨 界面特色
+## 功能概览
 
-- **现代化设计**：采用 Segoe UI 字体和现代色彩搭配
-- **分栏布局**：左侧配置请求，右侧显示响应
-- **上下分割响应区**：响应内容和 Cookie 变化分别显示
-- **智能键值对管理**：路径、参数、请求头、Cookie 均可逐项添加/删除
-- **图标化界面**：使用 Emoji 图标增强视觉效果
+- 路径分段：逐段输入自动拼接 URL。
+- 参数 / 请求头 / Cookie：可增删的键值对行，空键自动忽略。
+- Cookie 会话：发送前写入，响应后对比差异（新增/修改/删除）。
+- JSON 自动格式化（失败则原样显示）。
+- 深色代码区 + Emoji 分组标题。
 
-## 🚀 新版本亮点
+## 界面结构
 
-### ✨ **全新功能**
+左侧：
+1. 基础：Base URL + 方法选择
+2. 路径分段
+3. 查询参数
+4. 请求头
+5. Cookie 设定
+6. 发送按钮
 
-1. **📁 路径专用管理**：
-   - 路径不再需要键，只需要输入路径段
-   - 支持多段路径自动拼接（如：`api` + `users` + `123` = `/api/users/123`）
-   - 动态添加/删除路径段
+右侧（上下 Split）：
+- 上：响应状态/头/体
+- 下：Cookie 变化日志 + 当前 Cookie 列表
 
-2. **📊 分离式响应显示**：
-   - **上半部分**：完整的响应内容（状态码、响应头、响应体）
-   - **下半部分**：专门的 Cookie 变化追踪
-   - 再也不会因为 Cookie 更新而看不到响应内容
+## 运行
 
-3. **🔧 智能布局**：
-   - 使用 FlowLayoutPanel 避免控件重叠
-   - 自动滚动支持
-   - 响应式布局设计
-
-### 🛠 **改进的功能**
-
-#### 路径配置 📁
-- **之前**：需要输入完整路径如 `/api/users/123`
-- **现在**：分段输入：`api`, `users`, `123`，自动拼接
-
-#### 参数管理 🔧
-- **键值对形式**：`type=1`, `number=2`, `key=3`
-- **自动URL编码**：特殊字符自动处理
-- **动态增删**：点击 `+ 添加` 新增，点击 `×` 删除
-
-#### 请求头管理 📋
-- **常用预设**：User-Agent, Accept 等
-- **自定义支持**：Authorization, Content-Type 等
-- **实时管理**：随时添加/删除请求头
-
-#### Cookie 管理 🍪
-- **双重显示**：配置区域 + 专用变化窗口
-- **变化追踪**：🆕新增、🔄修改、🗑️删除
-- **会话保持**：自动同步服务器返回的 Cookie
-
-## 📱 使用方法
-
-### 1. 启动应用程序
-```bash
+```pwsh
 cd APITestApp
+dotnet build
 dotnet run
 ```
 
-### 2. 配置请求
-
-#### 基础配置
-- **API URL**: 在顶部输入目标服务器地址（如：`http://localhost:3001`）
-- **HTTP 方法**: 从下拉菜单选择请求方法
-
-#### 路径配置 📁
-- 点击 **"+ 添加路径"** 按钮
-- 输入路径段（如：`api`, `users`, `123`）
-- 系统自动拼接为：`/api/users/123`
-
-#### 查询参数 🔧
-- 点击 **"+ 添加"** 按钮
-- 输入键值对（如：`type` = `1`）
-- 自动构建查询字符串：`?type=1&number=2`
-
-#### 请求头 📋
-- 点击 **"+ 添加"** 按钮
-- 输入请求头（如：`Authorization` = `Bearer token123`）
-
-#### Cookie 🍪
-- 点击 **"+ 添加"** 按钮
-- 输入 Cookie（如：`session` = `abc123`）
-
-### 3. 发送请求
-点击底部的 **🚀 发送请求** 按钮
-
-### 4. 查看结果
-- **上半部分**：完整的HTTP响应信息
-- **下半部分**：专门的 Cookie 变化追踪
-
-## 🧪 测试示例
-
-### 启动测试服务器
-```bash
+可选：启动内置测试服务器（Node）
+```pwsh
 node test-server.js
 ```
-测试服务器将运行在 `http://localhost:3001`
+默认监听 http://localhost:3001
 
-### 示例请求配置
+## 使用步骤
+1. 填 Base URL（如 http://localhost:3001）与方法。
+2. 路径区添加段：api / users / 123 → /api/users/123。
+3. 参数区填写键值（自动 URL 编码）。
+4. 请求头（例：Authorization, Accept）。
+5. Cookie 区自定义会话值。
+6. 点击“发送请求”。
+7. 右侧查看响应 + 下方 Cookie 变化。
 
-#### 完整示例：用户信息查询
-- **URL**: `http://localhost:3001`
-- **路径**: 
-  - 第1段：`api`
-  - 第2段：`users`
-  - 第3段：`123`
-- **参数**: 
-  - `include` = `profile`
-  - `format` = `json`
-- **方法**: GET
-- **请求头**:
-  - `Authorization` = `Bearer your-jwt-token`
-  - `Accept` = `application/json`
-- **Cookie**:
-  - `session` = `user_session_123`
-  - `theme` = `dark`
+## 典型请求示例
+| 模块 | 值 |
+| ---- | --- |
+| Base URL | http://localhost:3001 |
+| 路径段 | api, users, 123 |
+| 查询参数 | include=profile, format=json |
+| 方法 | GET |
+| 请求头 | Accept=application/json |
+| Cookie | session=abc123 |
 
-**最终请求**：`http://localhost:3001/api/users/123?include=profile&format=json`
+最终 URL：`http://localhost:3001/api/users/123?include=profile&format=json`
 
-## 🎯 界面对比
+## 关键实现说明
+- `PathPanel` / `KeyValuePanel`：采用普通 `Panel` + 子控件 Dock=Top，避免 FlowLayoutPanel 在某些 DPI/布局下导致子控件宽度塌缩看不见的问题；新增控件后 `SendToBack()` 保持自上而下顺序。
+- `CookieContainer` + 差异对比：记录上次快照 ⇒ 新集合比较 ⇒ 输出新增 / 修改 / 删除。
+- `HttpClient` 复用单实例，避免端口耗尽。
+- JSON 处理：`Newtonsoft.Json` 反序列化后再格式化，失败则原样。
 
-### 问题解决
+## 常见问题 (FAQ)
+| 问题 | 说明 |
+| ---- | ---- |
+| 看不到路径/参数行 | 已修复：改为 Panel + Dock。请更新到当前版本。 |
+| Cookie 没变化 | 目标接口未返回 Set-Cookie 或域不匹配。确保主机一致。 |
+| 自定义 Content-Type 不生效 | 当前仅演示 GET/无 Body，POST 发送体可扩展。 |
 
-#### ✅ 问题1：添加按钮被遮挡
-- **之前**：添加两个值后按钮就看不见了
-- **现在**：使用 FlowLayoutPanel，按钮始终在底部可见
+## 扩展方向
+- 支持请求 Body（raw / form / JSON 编辑器）
+- 导入导出请求集合 (JSON)
+- 响应时间统计 / 重复压力测试
+- Header / Cookie 预设模板
 
-#### ✅ 问题2：路径不需要键
-- **之前**：路径也要输入键值对，很不直观
-- **现在**：专门的路径控件，只需输入路径段
+## 依赖
+| 名称 | 用途 |
+| ---- | ---- |
+| .NET 8 | 运行时 |
+| Windows Forms | GUI |
+| Newtonsoft.Json | JSON 解析/格式化 |
+| Node.js (可选) | 本地测试服务 |
 
-#### ✅ 问题3：Cookie 变化覆盖响应内容
-- **之前**：Cookie 更新时看不到请求内容
-- **现在**：上下分割窗口，响应内容和 Cookie 变化分别显示
+## 许可
+仅供学习与内部调试使用，未附加开源协议，可根据需要自行添加 LICENSE。
 
-## 🛠 技术实现
+## 更新摘要
+| 版本 | 内容 |
+| ---- | ---- |
+| 2.0 | 路径分段、响应/ Cookie 分离、布局重构、可视化增强 |
+| 2.1(当前) | 修复子行不可见（移除 FlowLayoutPanel），README 精简重写 |
 
-### 新增组件
-- **`PathControl`**: 专用路径输入控件
-- **`PathPanel`**: 路径管理面板
-- **上下分割容器**: `SplitContainer` 分离响应显示
-
-### 布局优化
-- **FlowLayoutPanel**: 避免控件重叠
-- **自动滚动**: 支持大量条目
-- **响应式设计**: 适应不同窗口大小
-
-## 📁 项目结构
-
-- `Program.cs`: 完整的应用程序代码（包含所有组件）
-- `APITestApp.csproj`: 项目配置文件
-- `test-server.js`: 测试用的 Node.js API 服务器
-- `README.md`: 详细使用说明
-
-## 🛠 技术栈
-
-- **.NET 8.0**: 现代化的 .NET 平台
-- **Windows Forms**: 原生 Windows GUI 框架
-- **HttpClient**: HTTP 请求处理
-- **CookieContainer**: Cookie 会话管理
-- **Newtonsoft.Json**: JSON 处理
-- **Node.js**: 测试服务器
-
-## ⚡ 性能特点
-
-- 异步 HTTP 请求，界面不会阻塞
-- 智能内存管理，支持大量键值对
-- 快速的 JSON 格式化
-- 高效的 Cookie 状态跟踪
-- 流畅的 UI 交互体验
-
-## 🔧 系统要求
-
-- Windows 操作系统
-- .NET 8.0 SDK
-- Node.js（用于测试服务器，可选）
-
-## 📝 更新日志
-
-### v2.0 (当前版本)
-- ✨ 新增专用路径管理功能
-- ✨ 响应区域上下分割显示
-- 🐛 修复添加按钮被遮挡问题
-- 🐛 修复 Cookie 变化覆盖响应内容问题
-- 🎨 优化 UI 布局和交互体验
-
-### v1.0
-- 🎉 首个版本发布
-- 基础 API 测试功能
-- 键值对管理
-- Cookie 变化追踪
-
-开始使用这个全新升级的 API 测试工具，体验更流畅、更直观的开发调试过程！🎉
+—— 享受更顺手的本地 API 调试体验。
