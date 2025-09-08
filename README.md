@@ -85,14 +85,3 @@ node test-server.js
 | Windows Forms | GUI |
 | Newtonsoft.Json | JSON 解析/格式化 |
 | Node.js (可选) | 本地测试服务 |
-
-## 许可
-仅供学习与内部调试使用，未附加开源协议，可根据需要自行添加 LICENSE。
-
-## 更新摘要
-| 版本 | 内容 |
-| ---- | ---- |
-| 2.0 | 路径分段、响应/ Cookie 分离、布局重构、可视化增强 |
-| 2.1(当前) | 修复子行不可见（移除 FlowLayoutPanel），README 精简重写 |
-
-—— 享受更顺手的本地 API 调试体验。
