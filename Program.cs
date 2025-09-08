@@ -21,9 +21,9 @@ public class PathControl : UserControl
 {
     public TextBox ValueTextBox { get; private set; } = null!;
     public Button DeleteButton { get; private set; } = null!;
-    
+
     public event EventHandler? DeleteRequested;
-    
+
     public string Value
     {
         get => ValueTextBox.Text;
@@ -47,7 +47,7 @@ public class PathControl : UserControl
             RowCount = 1,
             Margin = new Padding(0, 2, 0, 2),
         };
-        
+
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 90));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30));
 
@@ -85,7 +85,7 @@ public class PathPanel : UserControl
     private Panel contentPanel = null!;
     private Button addButton = null!;
     private List<PathControl> pathControls = new();
-    
+
     public List<string> GetPaths()
     {
         return pathControls
@@ -93,7 +93,7 @@ public class PathPanel : UserControl
             .Where(p => !string.IsNullOrWhiteSpace(p))
             .ToList();
     }
-    
+
     public void SetPaths(List<string> paths)
     {
         ClearAll();
@@ -114,10 +114,7 @@ public class PathPanel : UserControl
 
     private void InitializePathPanel()
     {
-        var mainLayout = new Panel
-        {
-            Dock = DockStyle.Fill,
-        };
+        var mainLayout = new Panel { Dock = DockStyle.Fill };
 
         addButton = new Button
         {
@@ -143,7 +140,7 @@ public class PathPanel : UserControl
         mainLayout.Controls.Add(contentPanel);
 
         this.Controls.Add(mainLayout);
-        
+
         // 添加第一个空白项
         AddPath("");
     }
@@ -160,14 +157,14 @@ public class PathPanel : UserControl
         };
 
         pathControls.Add(control);
-        
-    control.Dock = DockStyle.Top; // 在 Panel 内可正确拉伸
-    control.Height = 40;
-    control.Margin = new Padding(0, 2, 0, 2);
-    contentPanel.Controls.Add(control);
-    // 维持添加顺序为从上到下（Dock=Top 默认新控件会插到最上方，需要 SendToBack）
-    control.SendToBack();
-        
+
+        control.Dock = DockStyle.Top; // 在 Panel 内可正确拉伸
+        control.Height = 40;
+        control.Margin = new Padding(0, 2, 0, 2);
+        contentPanel.Controls.Add(control);
+        // 维持添加顺序为从上到下（Dock=Top 默认新控件会插到最上方，需要 SendToBack）
+        control.SendToBack();
+
         UpdateLayout();
     }
 
@@ -201,15 +198,15 @@ public class KeyValueControl : UserControl
     public TextBox KeyTextBox { get; private set; } = null!;
     public TextBox ValueTextBox { get; private set; } = null!;
     public Button DeleteButton { get; private set; } = null!;
-    
+
     public event EventHandler? DeleteRequested;
-    
+
     public string Key
     {
         get => KeyTextBox.Text;
         set => KeyTextBox.Text = value;
     }
-    
+
     public string Value
     {
         get => ValueTextBox.Text;
@@ -233,7 +230,7 @@ public class KeyValueControl : UserControl
             RowCount = 1,
             Margin = new Padding(0, 2, 0, 2),
         };
-        
+
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30));
@@ -280,9 +277,9 @@ public class KeyValuePanel : UserControl
     private Panel contentPanel = null!;
     private Button addButton = null!;
     private List<KeyValueControl> keyValueControls = new();
-    
+
     public string Title { get; set; } = "键值对";
-    
+
     public Dictionary<string, string> GetValues()
     {
         var result = new Dictionary<string, string>();
@@ -295,7 +292,7 @@ public class KeyValuePanel : UserControl
         }
         return result;
     }
-    
+
     public void SetValues(Dictionary<string, string> values)
     {
         ClearAll();
@@ -316,10 +313,7 @@ public class KeyValuePanel : UserControl
 
     private void InitializeKeyValuePanel()
     {
-        var mainLayout = new Panel
-        {
-            Dock = DockStyle.Fill,
-        };
+        var mainLayout = new Panel { Dock = DockStyle.Fill };
 
         addButton = new Button
         {
@@ -345,7 +339,7 @@ public class KeyValuePanel : UserControl
         mainLayout.Controls.Add(contentPanel);
 
         this.Controls.Add(mainLayout);
-        
+
         // 添加第一个空白项
         AddKeyValue("", "");
     }
@@ -362,13 +356,13 @@ public class KeyValuePanel : UserControl
         };
 
         keyValueControls.Add(control);
-        
-    control.Dock = DockStyle.Top;
-    control.Height = 40;
-    control.Margin = new Padding(0, 2, 0, 2);
-    contentPanel.Controls.Add(control);
-    control.SendToBack();
-        
+
+        control.Dock = DockStyle.Top;
+        control.Height = 40;
+        control.Margin = new Padding(0, 2, 0, 2);
+        contentPanel.Controls.Add(control);
+        control.SendToBack();
+
         UpdateLayout();
     }
 
@@ -409,17 +403,24 @@ public partial class MainForm : Form
     private Button btnSend = null!;
     private Panel leftPanel = null!;
     private Panel rightPanel = null!;
-    
+
     private readonly HttpClient httpClient;
     private readonly CookieContainer cookieContainer;
     private Dictionary<string, string> lastCookies = new();
+
+    // --- 新增字段，用于动态放大行 ---
+    private TableLayoutPanel leftMainLayout = null!;
+    private readonly Dictionary<int, int> originalRowHeights = new();
+    private readonly Dictionary<int, Control> sectionControlByRow = new();
+    private int? activeEnlargedRow = null;
+    private readonly int enlargePercent = 140; // 放大到 140%（可调整）
 
     public MainForm()
     {
         cookieContainer = new CookieContainer();
         var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
         httpClient = new HttpClient(handler);
-        
+
         InitializeComponent();
         LoadInitialData();
     }
@@ -441,7 +442,7 @@ public partial class MainForm : Form
             RowCount = 1,
             Padding = new Padding(10),
         };
-        
+
         mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
         mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
 
@@ -453,7 +454,7 @@ public partial class MainForm : Form
             Padding = new Padding(20),
             Margin = new Padding(5),
         };
-        
+
         var leftScrollPanel = new Panel
         {
             Dock = DockStyle.Fill,
@@ -490,15 +491,24 @@ public partial class MainForm : Form
             AutoScroll = true,
             Padding = new Padding(10),
         };
-        
+
+        // 保存引用以便后续动态调整高度
+        leftMainLayout = mainLayout;
+
         // 设置行样式
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50));  // 标题
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));  // URL方法
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // 路径
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // 参数
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // 请求头
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // Cookie
-        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70));  // 按钮
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50)); // 0 标题
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70)); // 1 URL方法
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // 2 路径
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // 3 参数
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // 4 请求头
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160)); // 5 Cookie
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70)); // 6 按钮
+
+        // 记录原始高度
+        for (int i = 0; i < mainLayout.RowCount; i++)
+        {
+            originalRowHeights[i] = (int)mainLayout.RowStyles[i].Height;
+        }
 
         // 标题
         var titleLabel = new Label
@@ -515,26 +525,37 @@ public partial class MainForm : Form
         var urlMethodPanel = CreateUrlMethodPanel();
         urlMethodPanel.Dock = DockStyle.Fill;
         mainLayout.Controls.Add(urlMethodPanel, 0, 1);
+        // 记录并绑定焦点事件（所在行索引 = 1）
+        sectionControlByRow[1] = urlMethodPanel;
+        AttachFocusHandlersToSection(urlMethodPanel, 1);
 
         // 路径配置
         var pathGroup = CreatePathGroup();
         pathGroup.Dock = DockStyle.Fill;
         mainLayout.Controls.Add(pathGroup, 0, 2);
+        sectionControlByRow[2] = pathGroup;
+        AttachFocusHandlersToSection(pathGroup, 2);
 
-        // 参数配置
-        var paramGroup = CreateSectionGroup("🔧 查询参数", out paramPanel);
+        // 参数配置 (row 3)
+        var paramGroup = CreateSectionGroup("🔧 查询参数", out paramPanel, 3);
         paramGroup.Dock = DockStyle.Fill;
         mainLayout.Controls.Add(paramGroup, 0, 3);
+        sectionControlByRow[3] = paramGroup;
+        AttachFocusHandlersToSection(paramGroup, 3);
 
-        // 请求头配置
-        var headerGroup = CreateSectionGroup("📋 请求头", out headerPanel);
+        // 请求头配置 (row 4)
+        var headerGroup = CreateSectionGroup("📋 请求头", out headerPanel, 4);
         headerGroup.Dock = DockStyle.Fill;
         mainLayout.Controls.Add(headerGroup, 0, 4);
+        sectionControlByRow[4] = headerGroup;
+        AttachFocusHandlersToSection(headerGroup, 4);
 
-        // Cookie 配置
-        var cookieGroup = CreateSectionGroup("🍪 Cookie", out cookiePanel);
+        // Cookie 配置 (row 5)
+        var cookieGroup = CreateSectionGroup("🍪 Cookie", out cookiePanel, 5);
         cookieGroup.Dock = DockStyle.Fill;
         mainLayout.Controls.Add(cookieGroup, 0, 5);
+        sectionControlByRow[5] = cookieGroup;
+        AttachFocusHandlersToSection(cookieGroup, 5);
 
         // 发送按钮
         var buttonPanel = CreateSendButtonPanel();
@@ -577,7 +598,7 @@ public partial class MainForm : Form
             ColumnCount = 3,
             RowCount = 1,
         };
-        
+
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70));
         layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30));
@@ -620,10 +641,15 @@ public partial class MainForm : Form
         layout.Controls.Add(cmbMethod, 2, 0);
 
         panel.Controls.Add(layout);
+
+        // 也为 URL 和 方法输入框单独绑定聚焦事件（以提高响应速度）
+        AttachFocusHandlersToSection(panel, 1);
+
         return panel;
     }
 
-    private GroupBox CreateSectionGroup(string title, out KeyValuePanel kvPanel)
+    // 修改：增加 rowIndex 参数，用于记录每个区所属的行
+    private GroupBox CreateSectionGroup(string title, out KeyValuePanel kvPanel, int rowIndex)
     {
         var group = new GroupBox
         {
@@ -638,16 +664,17 @@ public partial class MainForm : Form
 
         kvPanel = new KeyValuePanel { Dock = DockStyle.Fill };
         group.Controls.Add(kvPanel);
+
+        // 记录并绑定（如果此方法也单独调用则确保绑定）
+        sectionControlByRow[rowIndex] = group;
+        AttachFocusHandlersToSection(group, rowIndex);
+
         return group;
     }
 
     private Panel CreateSendButtonPanel()
     {
-        var panel = new Panel
-        {
-            Height = 60,
-            Padding = new Padding(0, 10, 0, 0),
-        };
+        var panel = new Panel { Height = 60, Padding = new Padding(0, 10, 0, 0) };
 
         btnSend = new Button
         {
@@ -740,27 +767,30 @@ public partial class MainForm : Form
     {
         // 设置默认的路径
         pathPanel.SetPaths(new List<string> { "api", "test" });
-        
+
         // 设置默认的参数
-        paramPanel.SetValues(new Dictionary<string, string> 
-        {
-            { "type", "1" },
-            { "number", "2" },
-            { "key", "3" }
-        });
-        
+        paramPanel.SetValues(
+            new Dictionary<string, string>
+            {
+                { "type", "1" },
+                { "number", "2" },
+                { "key", "3" },
+            }
+        );
+
         // 设置默认的请求头
-        headerPanel.SetValues(new Dictionary<string, string>
-        {
-            { "User-Agent", "APITestApp/2.0" },
-            { "Accept", "application/json" }
-        });
-        
+        headerPanel.SetValues(
+            new Dictionary<string, string>
+            {
+                { "User-Agent", "APITestApp/2.0" },
+                { "Accept", "application/json" },
+            }
+        );
+
         // 设置默认的Cookie
-        cookiePanel.SetValues(new Dictionary<string, string>
-        {
-            { "session", "example_session_id" }
-        });
+        cookiePanel.SetValues(
+            new Dictionary<string, string> { { "session", "example_session_id" } }
+        );
     }
 
     private async void BtnSend_Click(object? sender, EventArgs e)
@@ -774,9 +804,9 @@ public partial class MainForm : Form
             var baseUrl = txtApiUrl.Text.TrimEnd('/');
             var paths = pathPanel.GetPaths();
             var parameters = paramPanel.GetValues();
-            
+
             var fullUrl = baseUrl;
-            
+
             // 添加路径
             foreach (var path in paths)
             {
@@ -787,7 +817,7 @@ public partial class MainForm : Form
                     fullUrl += path.TrimStart('/');
                 }
             }
-            
+
             // 添加查询参数
             if (parameters.Any(p => !string.IsNullOrWhiteSpace(p.Key)))
             {
@@ -795,21 +825,22 @@ public partial class MainForm : Form
                     .Where(p => !string.IsNullOrWhiteSpace(p.Key))
                     .Select(p => $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value)}")
                     .ToArray();
-                    
+
                 if (queryParams.Any())
                 {
                     fullUrl += "?" + string.Join("&", queryParams);
                 }
             }
 
-            txtResponse.Text = $"🚀 请求 URL: {fullUrl}\n📋 请求方法: {cmbMethod.Text}\n⏰ 时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n\n";
+            txtResponse.Text =
+                $"🚀 请求 URL: {fullUrl}\n📋 请求方法: {cmbMethod.Text}\n⏰ 时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n\n";
 
             // 设置 Cookies
             SetCookiesFromPanel(fullUrl);
 
             // 发送请求
             var result = await SendRequest(cmbMethod.Text, fullUrl);
-            
+
             // 显示响应
             txtResponse.Text += result;
 
@@ -866,10 +897,10 @@ public partial class MainForm : Form
             {
                 result.AppendLine($"   {header.Key}: {string.Join(", ", header.Value)}");
             }
-            
+
             result.AppendLine($"\n📄 响应内容:");
             result.AppendLine(new string('=', 50));
-            
+
             // 尝试格式化JSON
             try
             {
@@ -917,14 +948,14 @@ public partial class MainForm : Form
         {
             var uri = new Uri(url);
             var currentCookies = new Dictionary<string, string>();
-            
+
             foreach (Cookie cookie in cookieContainer.GetCookies(uri))
             {
                 currentCookies[cookie.Name] = cookie.Value;
             }
 
             var changes = new List<string>();
-            
+
             // 检查新增或修改的 cookies
             foreach (var current in currentCookies)
             {
@@ -934,7 +965,9 @@ public partial class MainForm : Form
                 }
                 else if (lastCookies[current.Key] != current.Value)
                 {
-                    changes.Add($"🔄 修改: {current.Key} = {current.Value} (原值: {lastCookies[current.Key]})");
+                    changes.Add(
+                        $"🔄 修改: {current.Key} = {current.Value} (原值: {lastCookies[current.Key]})"
+                    );
                 }
             }
 
@@ -950,20 +983,24 @@ public partial class MainForm : Form
             // 显示变化
             if (changes.Any())
             {
-                txtCookieChanges.Text = $"🍪 Cookie 变化检测 - {DateTime.Now:HH:mm:ss}\n" + 
-                                       new string('=', 40) + "\n" +
-                                       string.Join("\n", changes) + "\n\n" +
-                                       "📋 当前所有 Cookie:\n" + 
-                                       string.Join("\n", currentCookies.Select(c => $"   {c.Key} = {c.Value}"));
-                
+                txtCookieChanges.Text =
+                    $"🍪 Cookie 变化检测 - {DateTime.Now:HH:mm:ss}\n"
+                    + new string('=', 40)
+                    + "\n"
+                    + string.Join("\n", changes)
+                    + "\n\n"
+                    + "📋 当前所有 Cookie:\n"
+                    + string.Join("\n", currentCookies.Select(c => $"   {c.Key} = {c.Value}"));
+
                 // 更新 Cookie 面板
                 cookiePanel.SetValues(currentCookies);
             }
             else
             {
-                txtCookieChanges.Text = $"✅ 没有 Cookie 变化 - {DateTime.Now:HH:mm:ss}\n\n" +
-                                       "📋 当前所有 Cookie:\n" + 
-                                       string.Join("\n", currentCookies.Select(c => $"   {c.Key} = {c.Value}"));
+                txtCookieChanges.Text =
+                    $"✅ 没有 Cookie 变化 - {DateTime.Now:HH:mm:ss}\n\n"
+                    + "📋 当前所有 Cookie:\n"
+                    + string.Join("\n", currentCookies.Select(c => $"   {c.Key} = {c.Value}"));
             }
 
             // 更新 lastCookies
@@ -973,6 +1010,118 @@ public partial class MainForm : Form
         {
             txtCookieChanges.Text = $"❌ 检查 Cookie 变化时出错: {ex.Message}";
         }
+    }
+
+    // ----------------- 放大 / 恢复 相关方法 -----------------
+
+    private void AttachFocusHandlersToSection(Control sectionControl, int rowIndex)
+    {
+        // 递归为该区内的所有子控件添加 Enter/Leave（GotFocus/LostFocus 也可以）
+        void AddHandlers(Control c)
+        {
+            c.Enter += (s, e) => EnlargeSection(rowIndex);
+            c.Leave += (s, e) =>
+            {
+                // 用 BeginInvoke 延后判断焦点是否真的移出该区（避免同一区域内控件切换导致误恢复）
+                this.BeginInvoke(
+                    new Action(() =>
+                    {
+                        var focused = GetDeepFocusedControl();
+                        if (focused == null || !IsControlInContainer(focused, sectionControl))
+                        {
+                            RestoreSection(rowIndex);
+                        }
+                    })
+                );
+            };
+
+            foreach (Control child in c.Controls)
+            {
+                AddHandlers(child);
+            }
+        }
+
+        AddHandlers(sectionControl);
+    }
+
+    private void EnlargeSection(int rowIndex)
+    {
+        if (activeEnlargedRow == rowIndex)
+            return;
+
+        // 先恢复之前的
+        if (activeEnlargedRow != null)
+        {
+            RestoreSection(activeEnlargedRow.Value);
+        }
+
+        if (!originalRowHeights.ContainsKey(rowIndex))
+            return;
+
+        var original = originalRowHeights[rowIndex];
+        var newHeight = Math.Max(original, original * enlargePercent / 100);
+
+        leftMainLayout.RowStyles[rowIndex].SizeType = SizeType.Absolute;
+        leftMainLayout.RowStyles[rowIndex].Height = newHeight;
+
+        // 高亮对应控件（若有）
+        if (sectionControlByRow.TryGetValue(rowIndex, out var c))
+        {
+            c.BackColor = Color.FromArgb(235, 245, 255); // 轻微高亮
+            c.Padding = new Padding(12); // 轻微内边距
+        }
+
+        activeEnlargedRow = rowIndex;
+    }
+
+    private void RestoreSection(int rowIndex)
+    {
+        if (!originalRowHeights.ContainsKey(rowIndex))
+            return;
+
+        // 如果当前活动放大行不是这个，就不用处理
+        if (activeEnlargedRow != rowIndex)
+            return;
+
+        leftMainLayout.RowStyles[rowIndex].SizeType = SizeType.Absolute;
+        leftMainLayout.RowStyles[rowIndex].Height = originalRowHeights[rowIndex];
+
+        if (sectionControlByRow.TryGetValue(rowIndex, out var c))
+        {
+            c.BackColor = Color.White;
+            c.Padding = new Padding(10);
+        }
+
+        activeEnlargedRow = null;
+    }
+
+    // 判断一个控件是否在容器（或其子孙）中
+    private bool IsControlInContainer(Control child, Control container)
+    {
+        Control? cur = child;
+        while (cur != null)
+        {
+            if (cur == container)
+                return true;
+            cur = cur.Parent;
+        }
+        return false;
+    }
+
+    // 深度获取当前焦点控件（遍历 ActiveControl 链）
+    // 深度获取当前焦点控件（遍历 ContainerControl 的 ActiveControl 链）
+    private Control? GetDeepFocusedControl()
+    {
+        // this.ActiveControl 在 Form (ContainerControl) 上可用
+        Control? focused = this.ActiveControl;
+
+        // 如果 focused 是 ContainerControl（有 ActiveControl 属性），就继续深入
+        while (focused is ContainerControl container && container.ActiveControl != null)
+        {
+            focused = container.ActiveControl;
+        }
+
+        return focused;
     }
 
     protected override void Dispose(bool disposing)
