@@ -1,6 +1,6 @@
 # API 测试工具 (WinForms / .NET 8)
 
-轻量、直观的本地 GUI API 调试工具：分栏布局、路径分段、键值对式参数/请求头/Cookie 管理、响应 & Cookie 变化分离显示。
+轻量、直观的本地 GUI API 调试工具：分栏布局、路径分段、键值对式参数/请求头/Cookie 管理、响应 & Cookie 变化分离显示。该工具使用LLM生成
 
 ## 功能概览
 
@@ -85,3 +85,4 @@ node test-server.js
 | Windows Forms | GUI |
 | Newtonsoft.Json | JSON 解析/格式化 |
 | Node.js (可选) | 本地测试服务 |
+
